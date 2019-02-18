@@ -12,7 +12,6 @@ describe('User visits create page', () => {
     browser.setValue('#imageUrl-input', newItem.imageUrl);
     browser.click('#submit-button');
 
-    browser.url('/');
     assert.include(browser.getText('body'), newItem.title);
     assert.include(browser.getAttribute('body img', 'src'), newItem.imageUrl);
   });

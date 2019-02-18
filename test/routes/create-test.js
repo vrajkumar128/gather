@@ -37,17 +37,41 @@ describe('Server path: /items/create', () => {
   });
 
   describe('POST', () => {
-    it('creates and renders a new item', async () => {
-      const newItem = buildItemObject();
+    it('creates a new item in the database', async () => {
+     const response = await request(app)
+        .post('/items/create')
+        .type('form')
+        .send(itemToCreate);
+
+      const createdItem = await Item.findOne(itemToCreate);
+      assert.exists(createdItem);
+    });
+
+    it('redirects to /', async () => {
+      const response = await request(app)
+        .post('/items/create')
+        .type('form')
+        .send(itemToCreate);
+
+      assert.strictEqual(response.status, 302);
+      assert.strictEqual(response.headers.location, '/');
+    });
+
+    it('displays an error message when no title is supplied', async () => {
+      const newItem = {
+        description: "description",
+        imageUrl: "imageUrl"
+      };
 
       const response = await request(app)
         .post('/items/create')
         .type('form')
         .send(newItem);
 
-      assert.include(parseTextFromHTML(response.text, '.item-title'), newItem.title);
-      const imageElement = findImageElementBySource(response.text, newItem.imageUrl);
-      assert.exists(imageElement);
+      const createdItem = await Item.findOne(newItem);
+      assert.notExists(createdItem);
+      assert.strictEqual(response.status, 400);
+      assert.include(parseTextFromHTML(response.text, 'form'), 'required');
     });
   });
 });

@@ -13,5 +13,25 @@ describe('Model: Item', () => {
   });
 
   // Write your tests below:
+  describe('#title', () => {
+    it('is a String', () => {
+      const titleAsNum = 4;
 
+      const item = new Item({
+        title: titleAsNum
+      });
+
+      assert.strictEqual(item.title, String(titleAsNum));
+    });
+
+    it('is required', () => {
+      const item = new Item({
+        title: ''
+      });
+
+      item.validateSync();
+
+      assert.strictEqual(item.errors.title.message, 'Path `title` is required.');
+    });
+  });
 });
