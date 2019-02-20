@@ -1,12 +1,12 @@
-const {assert} = require('chai');
+const { assert } = require('chai');
 const request = require('supertest');
-const {jsdom} = require('jsdom');
+const { jsdom } = require('jsdom');
 
 const app = require('../../app');
 const Item = require('../../models/item');
 
-const {parseTextFromHTML, buildItemObject} = require('../test-utils');
-const {connectDatabaseAndDropData, diconnectDatabase} = require('../setup-teardown-utils');
+const { parseTextFromHTML, buildItemObject } = require('../test-utils');
+const { connectDatabaseAndDropData, diconnectDatabase } = require('../setup-teardown-utils');
 
 const findImageElementBySource = (htmlAsString, src) => {
   const image = jsdom(htmlAsString).querySelector(`img[src="${src}"]`);
@@ -38,12 +38,12 @@ describe('Server path: /items/create', () => {
 
   describe('POST', () => {
     it('creates a new item in the database', async () => {
-     const response = await request(app)
+      const response = await request(app)
         .post('/items/create')
         .type('form')
         .send(itemToCreate);
-
       const createdItem = await Item.findOne(itemToCreate);
+
       assert.exists(createdItem);
     });
 
@@ -67,8 +67,42 @@ describe('Server path: /items/create', () => {
         .post('/items/create')
         .type('form')
         .send(newItem);
-
       const createdItem = await Item.findOne(newItem);
+      
+      assert.notExists(createdItem);
+      assert.strictEqual(response.status, 400);
+      assert.include(parseTextFromHTML(response.text, 'form'), 'required');
+    });
+
+    it('displays an error message when no description is supplied', async () => {
+      const newItem = {
+        title: "title",
+        imageUrl: "imageUrl"
+      };
+
+      const response = await request(app)
+        .post('/items/create')
+        .type('form')
+        .send(newItem);
+      const createdItem = await Item.findOne(newItem);
+
+      assert.notExists(createdItem);
+      assert.strictEqual(response.status, 400);
+      assert.include(parseTextFromHTML(response.text, 'form'), 'required');
+    });
+
+    it('displays an error message when no imageUrl is supplied', async () => {
+      const newItem = {
+        title: "title",
+        description: "description"
+      };
+
+      const response = await request(app)
+        .post('/items/create')
+        .type('form')
+        .send(newItem);
+      const createdItem = await Item.findOne(newItem);
+
       assert.notExists(createdItem);
       assert.strictEqual(response.status, 400);
       assert.include(parseTextFromHTML(response.text, 'form'), 'required');
