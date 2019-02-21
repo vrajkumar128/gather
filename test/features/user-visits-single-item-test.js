@@ -1,16 +1,36 @@
 const { assert } = require('chai');
-const { seedItemToDatabase, findImageElementBySource } = require('../test-utils');
-const { jsdom } = require('jsdom');
+const { seedItemToDatabase } = require('../test-utils');
 
 describe('User visits single item view', () => {
   it('the item appears on the page', async () => {
     const item = await seedItemToDatabase();
 
     await browser.url(`/items/${item._id}`);
-    const bodyText = await browser.getText('body');
 
-    assert.include(bodyText, item.title);
-    assert.include(bodyText, item.description);
     assert.strictEqual(await browser.getAttribute('.single-item-img img', 'src'), item.imageUrl);
   });
+
+  describe('and can navigate', () => {
+    it('back to index page', async () => {
+      browser.url('/');
+      const indexUrl = await browser.getUrl();
+      const item = await seedItemToDatabase();
+      await browser.url(`/items/${item._id}`);
+
+      await browser.click('a[href="/"]');
+
+      assert.strictEqual(await browser.getUrl(), indexUrl);
+    });
+
+    it('to update page', async () => {
+      const item = await seedItemToDatabase();
+      await browser.url(`/items/${item._id}/update`);
+      const updateUrl = await browser.getUrl();
+      await browser.url(`/items/${item._id}`);
+
+      await browser.click(`a[href="${item._id}/update"]`);
+
+      assert.strictEqual(await browser.getUrl(), updateUrl);
+    });
+  })
 });

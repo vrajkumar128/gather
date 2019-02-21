@@ -10,6 +10,25 @@ describe('User visits root', () => {
     });
   });
 
+  describe('with existing items', () => {
+    it('can view a single item', async () => {
+      const item = await seedItemToDatabase();
+      browser.url('/');
+
+      await browser.click(`.item-card a[href="/items/${item._id}"]`);
+      const browserUrl = await browser.getUrl();
+
+      assert.strictEqual(browserUrl.match(/\/[^\/]*\/[^\/]*$/)[0], `/items/${item._id}`); 
+    });
+
+    it('can delete a single item', async () => {
+      const item = await seedItemToDatabase();
+      browser.url('/');
+
+      await browser.click(`.item-card a[href="/items/${item._id}/delete"]`);
+    });
+  });
+
   describe('and can navigate', () => {
     it('to create page', async () => {
       browser.url('/');
@@ -18,16 +37,6 @@ describe('User visits root', () => {
       const browserUrl = await browser.getUrl();
 
       assert.strictEqual(browserUrl.match(/\/[^\/]*\/[^\/]*$/)[0], '/items/create');
-    });
-
-    it('to single item view', async () => {
-      const item = await seedItemToDatabase();
-      browser.url('/');
-
-      await browser.click(`.item-card a[href="/items/${item._id}"]`);
-      const browserUrl = await browser.getUrl();
-
-      assert.strictEqual(browserUrl.match(/\/[^\/]*\/[^\/]*$/)[0], `/items/${item._id}`); 
     });
   });
 });

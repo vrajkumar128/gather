@@ -1,6 +1,7 @@
 const itemsRouter = require('express').Router();
 
 const Item = require('../models/item');
+const mongoose = require('../database');
 
 // Handle :itemId URL parameter
 itemsRouter.param('itemId', async (req, res, next, itemId) => {
@@ -61,5 +62,30 @@ itemsRouter.get('/:itemId', (req, res) => {
   const item = req.item;
   res.render('single', { item });
 });
+
+// Render item update page
+itemsRouter.get('/:itemId/update', (req, res) => {
+  const item = req.item;
+  res.render('update', { item });
+});
+
+// Update an individual item
+itemsRouter.post('/:itemId/update', validateItem, async (req, res, next) => {
+  const item = req.item;
+  const updatedItem = req.newItem;
+
+  try {
+    await Item.updateOne({ _id: item._id }, { $set: {
+      title: updatedItem.title,
+      description: updatedItem.description,
+      imageUrl: updatedItem.imageUrl
+    }});
+    res.redirect(`/items/${item._id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Delete an individual item
 
 module.exports = itemsRouter;

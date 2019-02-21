@@ -16,4 +16,16 @@ describe('User visits create page', () => {
     assert.include(await browser.getText('body'), newItem.title);
     assert.include(await browser.getAttribute('body img', 'src'), newItem.imageUrl);
   });
+
+  describe('and can navigate', () => {
+    it('back to index page', async () => {
+      browser.url('/');
+      const indexUrl = await browser.getUrl();
+      await browser.url('/items/create');
+
+      await browser.click('a[href="/"]');
+
+      assert.strictEqual(await browser.getUrl(), indexUrl);
+    });
+  });
 });

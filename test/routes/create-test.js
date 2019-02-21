@@ -5,14 +5,14 @@ const app = require('../../app');
 const Item = require('../../models/item');
 
 const { parseTextFromHTML, buildItemObject} = require('../test-utils');
-const { connectDatabaseAndDropData, diconnectDatabase } = require('../setup-teardown-utils');
+const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
 
 describe('Server path: /items/create', () => {
   const itemToCreate = buildItemObject();
 
   beforeEach(connectDatabaseAndDropData);
 
-  afterEach(diconnectDatabase);
+  afterEach(disconnectDatabase);
 
   // Write your describe blocks below:
   describe('GET', () => {
@@ -20,9 +20,9 @@ describe('Server path: /items/create', () => {
       const response = await request(app)
         .get('/items/create');
 
-      assert.strictEqual(parseTextFromHTML(response.text, '#title-input'), '');
-      assert.strictEqual(parseTextFromHTML(response.text, '#description-input'), '');
-      assert.strictEqual(parseTextFromHTML(response.text, '#imageUrl-input'), '');
+      assert.exists(parseTextFromHTML(response.text, `#title-input[value=""]`));
+      assert.include(parseTextFromHTML(response.text, '#description-input'), '');
+      assert.exists(parseTextFromHTML(response.text, `#imageUrl-input[value=""]`));
     });
   });
 
@@ -37,7 +37,7 @@ describe('Server path: /items/create', () => {
       assert.exists(createdItem);
     });
 
-    it('redirects to /', async () => {
+    it('redirects to index', async () => {
       const response = await request(app)
         .post('/items/create')
         .type('form')
