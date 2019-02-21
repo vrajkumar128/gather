@@ -27,7 +27,7 @@ describe('Server path: /', () => {
       const item = await seedItemToDatabase();
 
       const response = await request(app)
-      .get(`/`);
+        .get(`/`);
 
       assert.include(parseTextFromHTML(response.text, '.item-title'), item.title);
       const imageElement = findImageElementBySource(response.text, item.imageUrl);

@@ -7,7 +7,7 @@ itemsRouter.param('itemId', async (req, res, next, itemId) => {
   
   // Try to find the item with itemId in the database and attach it to the request object
   try {
-    const item = await Item.findOne({ _id: itemId });
+    const item = await Item.findById(itemId);
 
     if (item) {
       req.item = item;
@@ -59,7 +59,7 @@ itemsRouter.post('/create', validateItem, async (req, res) => {
 // View an individual item
 itemsRouter.get('/:itemId', (req, res) => {
   const item = req.item;
-  res.render('item', { item });
+  res.render('single', { item });
 });
 
 module.exports = itemsRouter;
