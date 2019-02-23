@@ -6,15 +6,18 @@ module.exports = mongoose.model(
   mongoose.Schema({
     title: {
       type: String,
-      required: true
+      required: "Title is required"
     },
     description: {
       type: String,
-      required: true
+      required: "Description is required"
     },
     imageUrl: {
       type: String,
-      required: true
+      required: "Image URL is required"
+    },
+    _id: {
+      type: Number
     }
   })
 );

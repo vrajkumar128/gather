@@ -1,18 +1,21 @@
 const { jsdom } = require('jsdom');
 
 const Item = require('../models/item');
+const { getCounter, decrementCounter } = require('../database');
 
 // Create and return a sample Item object
-const buildItemObject = (options = {}) => {
+const buildItemObject = async (options = {}) => {
   const title = options.title || 'My favorite item';
   const imageUrl = options.imageUrl || 'http://placebear.com/g/200/300';
   const description = options.description || 'Just the best item';
-  return {title, imageUrl, description};
+  const _id = await getCounter("items");
+  decrementCounter();
+  return { title, imageUrl, description, _id };
 };
 
 // Add a sample Item object to mongodb
 const seedItemToDatabase = async (options = {}) => {
-  const item = await Item.create(buildItemObject(options));
+  const item = await Item.create(await buildItemObject(options));
   return item;
 };
 

@@ -1,6 +1,7 @@
+const { assert } = require('chai');
+const { mongoose, databaseUrl, options } = require('../../database');
+
 const Item = require('../../models/item');
-const {assert} = require('chai');
-const {mongoose, databaseUrl, options} = require('../../database');
 
 describe('Model: Item', () => {
   beforeEach(async () => {
@@ -31,7 +32,7 @@ describe('Model: Item', () => {
 
       item.validateSync();
 
-      assert.strictEqual(item.errors.title.message, 'Path `title` is required.');
+      assert.include(item.errors.title.message, 'required');
     });
   });
 
@@ -53,7 +54,7 @@ describe('Model: Item', () => {
 
       item.validateSync();
 
-      assert.strictEqual(item.errors.description.message, 'Path `description` is required.');
+      assert.include(item.errors.description.message, 'required');
     });
   });
 
@@ -75,7 +76,7 @@ describe('Model: Item', () => {
 
       item.validateSync();
 
-      assert.strictEqual(item.errors.imageUrl.message, 'Path `imageUrl` is required.');
+      assert.include(item.errors.imageUrl.message, 'required');
     });
   });
 });

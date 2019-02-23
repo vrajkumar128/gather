@@ -1,7 +1,14 @@
 const { assert } = require('chai');
 const { seedItemToDatabase } = require('../test-utils');
 
+const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
+
 describe('User visits single item view', () => {
+
+  beforeEach(connectDatabaseAndDropData);
+
+  afterEach(disconnectDatabase);
+
   it('the item appears on the page', async () => {
     const item = await seedItemToDatabase();
 

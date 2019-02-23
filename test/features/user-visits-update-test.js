@@ -1,7 +1,14 @@
 const { assert } = require('chai');
 const { seedItemToDatabase } = require('../test-utils');
 
+const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
+
 describe('User visits update page', () => {
+
+  beforeEach(connectDatabaseAndDropData);
+
+  afterEach(disconnectDatabase);
+
   it('can update an item', async () => {
     const itemToUpdate = await seedItemToDatabase();
     const updatedTitle = "updated title";

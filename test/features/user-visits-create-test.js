@@ -1,10 +1,17 @@
-const {assert} = require('chai');
-const {buildItemObject} = require('../test-utils');
+const { assert } = require('chai');
+const { buildItemObject } = require('../test-utils');
+
+const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
 
 // Add your tests below:
 describe('User visits create page', () => {
+
+  beforeEach(connectDatabaseAndDropData);
+
+  afterEach(disconnectDatabase);
+
   it('can post a new item', async () => {
-    const newItem = buildItemObject();
+    const newItem = await buildItemObject();
     await browser.url('/items/create');
 
     await browser.setValue('#title-input', newItem.title);

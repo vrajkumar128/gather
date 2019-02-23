@@ -396,6 +396,10 @@ input, textarea {
   width: 100%;
 }
 
+.error {
+  color: red;
+}
+
 .form-navigation {
   padding: 36px 0px;
   width: 100%;

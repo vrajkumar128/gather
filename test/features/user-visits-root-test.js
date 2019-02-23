@@ -1,7 +1,14 @@
 const { assert } = require('chai');
 const { seedItemToDatabase } = require('../test-utils');
 
+const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
+
 describe('User visits root', () => {
+
+  beforeEach(connectDatabaseAndDropData);
+
+  afterEach(disconnectDatabase);
+
   describe('without existing items', () => {
     it('starts blank', () => {
       browser.url('/');

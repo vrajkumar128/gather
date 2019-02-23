@@ -7,8 +7,8 @@ const Item = require('../../models/item');
 const { parseTextFromHTML, buildItemObject} = require('../test-utils');
 const { connectDatabaseAndDropData, disconnectDatabase } = require('../setup-teardown-utils');
 
-describe('Server path: /items/create', () => {
-  const itemToCreate = buildItemObject();
+describe('Server path: /items/create', async () => {
+  const itemToCreate = await buildItemObject();
 
   beforeEach(connectDatabaseAndDropData);
 

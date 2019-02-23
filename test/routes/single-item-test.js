@@ -40,5 +40,12 @@ describe('Server path: /items/:itemId', () => {
       const imageElement = findImageElementBySource(response.text, item.imageUrl);
       assert.strictEqual(imageElement.src, item.imageUrl);
     });
+
+    it('returns a 404 when trying to view a nonexistent item', async () => {
+      const response = await request(app)
+        .get(`/items/0`);
+
+      assert.strictEqual(response.status, 404);
+    });
   });
 });

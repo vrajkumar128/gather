@@ -1,11 +1,11 @@
 const itemsRouter = require('express').Router();
 
 const Item = require('../models/item');
-const mongoose = require('../database');
+const { getCounter } = require('../database');
 
 // Handle :itemId URL parameter
 itemsRouter.param('itemId', async (req, res, next, itemId) => {
-  
+
   // Try to find the item with itemId in the database and attach it to the request object
   try {
     const item = await Item.findById(itemId);
@@ -14,28 +14,41 @@ itemsRouter.param('itemId', async (req, res, next, itemId) => {
       req.item = item;
       next();
     } else {
-      res.status(404).send("Item not found");
+      res.status(404).render('error', { 
+        message: "Item not found", 
+        error: { status: "404" } 
+      });
     }
   } catch (err) {
-    next(err);
+    res.status(404).render('error', {
+      message: "Item not found",
+      error: { status: "404" }
+    });
   }
 });
 
 // Ensure that a received item is valid
 const validateItem = (req, res, next) => {
   const { title, description, imageUrl } = req.body;
-  const newItem = new Item({
+  const receivedItem = new Item({
     title,
     description,
     imageUrl
   });
-  newItem.validateSync();
+  receivedItem.validateSync();
 
-  // If validateSync() finds any errors, send a 400 code and reload the create page; otherwise proceed
-  if (newItem.errors) {
-    res.status(400).render('create', { newItem });
+  // If validateSync() finds any errors, send a 400 code and reload the appropriate page; otherwise proceed
+  if (receivedItem.errors) {
+    if (req.route.path === '/create') {
+      res.status(400).render('create', { newItem: receivedItem });
+    } else if (req.route.path === '/:itemId/update') {
+      res.status(400).render('update', { 
+        originalItem: req.item, 
+        item: receivedItem
+      });
+    }
   } else {
-    req.newItem = newItem;
+    req.receivedItem = receivedItem;
     next();
   }
 };
@@ -46,8 +59,9 @@ itemsRouter.get('/create', (req, res) => {
 });
 
 // Create a new item
-itemsRouter.post('/create', validateItem, async (req, res) => {
-  const newItem = req.newItem;
+itemsRouter.post('/create', validateItem, async (req, res, next) => {
+  const newItem = req.receivedItem;
+  newItem._id = await getCounter("items");
 
   try {
     await newItem.save();
@@ -57,7 +71,7 @@ itemsRouter.post('/create', validateItem, async (req, res) => {
   }
 });
 
-// View an individual item
+// Render single item view
 itemsRouter.get('/:itemId', (req, res) => {
   const item = req.item;
   res.render('single', { item });
@@ -71,16 +85,16 @@ itemsRouter.get('/:itemId/update', (req, res) => {
 
 // Update an individual item
 itemsRouter.post('/:itemId/update', validateItem, async (req, res, next) => {
-  const item = req.item;
-  const updatedItem = req.newItem;
+  const itemToUpdate = req.item;
+  const updatedItem = req.receivedItem;
 
   try {
-    await Item.updateOne({ _id: item._id }, { $set: {
+    await Item.updateOne(itemToUpdate, { $set: {
       title: updatedItem.title,
       description: updatedItem.description,
       imageUrl: updatedItem.imageUrl
     }});
-    res.redirect(`/items/${item._id}`);
+    res.redirect(`/items/${itemToUpdate._id}`);
   } catch (err) {
     next(err);
   }
