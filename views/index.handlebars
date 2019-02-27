@@ -4,7 +4,7 @@
       <img class="item-img" src="{{item.imageUrl}}">
       <div class="image-overlay">
         <div class="overlay-button delete-button">
-          <a href="/items/{{item._id}}/delete">
+          <a class="delete">
             <img src="/img/delete.svg" alt="delete">
             <p>Delete</p>
           </a>
@@ -20,6 +20,23 @@
         <p>{{item.title}}</p>
       </div>
     </div>
+
+    <!-- Modal Delete Confirmation Dialog -->
+    <div class="modal">
+      <div class="modal-content">
+        <p>Are you sure you wish to delete {{ item.title }}?</p>
+          <div class="form-navigation">
+            <button class="button submit-button cancel-button">
+              <p>Cancel</p>
+            </button>
+            <form>
+              <button class="button submit-button confirm-delete-button" type="submit">
+                <p>Delete</p>
+              </button>
+            </form>
+          </div>
+      </div>
+    </div>
   {{/each}}
 </div>
 <div id="navigation">
@@ -33,10 +50,30 @@
   </a>
 </div>
 <script>
-  document.querySelectorAll('.delete-form')
-    .forEach(function(element) {
-      element.onclick = function(e) {
-        e.preventDefault();
-        element.submit()};
-    });
+  var modals = document.querySelectorAll('.modal');
+  var deleteButtons = document.querySelectorAll('.item-card .delete');
+  var cancelButtons = document.querySelectorAll('.cancel-button');
+
+  // Display respective modal whenever a delete button is clicked
+  deleteButtons.forEach(function(deleteButton, index) {
+    deleteButton.onclick = function() {
+      modals[index].style.display = "flex";
+    };
+  });
+
+  // Hide modal whenever a cancel button is clicked
+  cancelButtons.forEach(function(cancelButton, index) {
+    cancelButton.onclick = function() {
+      modals[index].style.display = "none";
+    };
+  });
+
+  // Hide modal if user clicks anywhere outside of the modal
+  modals.forEach(function(modal) {
+    modal.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    };
+  });
 </script>

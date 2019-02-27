@@ -79,4 +79,16 @@ describe('Model: Item', () => {
       assert.include(item.errors.imageUrl.message, 'required');
     });
   });
+
+  describe('#_id', () => {
+    it('is a Number', () => {
+      const _idAsString = "1";
+
+      const item = new Item({
+        _id: _idAsString
+      });
+
+      assert.strictEqual(item._id, Number(_idAsString));
+    })
+  });
 });

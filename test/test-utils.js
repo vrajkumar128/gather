@@ -1,7 +1,7 @@
 const { jsdom } = require('jsdom');
 
 const Item = require('../models/item');
-const { getCounter, decrementCounter } = require('../database');
+const { getCounter } = require('../database');
 
 // Create and return a sample Item object
 const buildItemObject = async (options = {}) => {
@@ -9,7 +9,6 @@ const buildItemObject = async (options = {}) => {
   const imageUrl = options.imageUrl || 'http://placebear.com/g/200/300';
   const description = options.description || 'Just the best item';
   const _id = await getCounter("items");
-  decrementCounter();
   return { title, imageUrl, description, _id };
 };
 
